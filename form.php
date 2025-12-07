@@ -1,38 +1,52 @@
 <?php
+// ...existing code...
+session_start();
 include 'config.php';
 
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-$name = $country = $description = $image_url = '';
+// chỉ admin mới truy cập
+if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
+    header('Location: index.php');
+    exit;
+}
 
-if ($id > 0) {
-    $stmt = $conn->prepare("SELECT * FROM destinations WHERE destination_id=?");
-    $stmt->bind_param("i", $id);
+$destination_id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : null;
+$destination = ['name'=>'', 'country'=>'', 'description'=>'', 'image_url'=>''];
+
+// Nếu có id => lấy record (EDIT mode)
+if ($destination_id) {
+    $stmt = $conn->prepare("SELECT * FROM destinations WHERE destination_id = ?");
+    $stmt->bind_param("i", $destination_id);
     $stmt->execute();
     $res = $stmt->get_result();
-    if ($res->num_rows > 0) {
-        $row = $res->fetch_assoc();
-        $name = $row['name'];
-        $country = $row['country'];
-        $description = $row['description'];
-        $image_url = $row['image_url'];
+    if ($res && $res->num_rows === 1) {
+        $destination = $res->fetch_assoc();
+    } else {
+        // nếu id không tồn tại, quay về list
+        header('Location: index.php');
+        exit;
     }
 }
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['name'];
-    $country = $_POST['country'];
-    $description = $_POST['description'];
-    $image_url = $_POST['image_url'];
+// Xử lý POST cho cả Add và Edit
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    if ($_POST['id'] > 0) {
+    $name = trim($_POST["name"] ?? '');
+    $country = trim($_POST["country"] ?? '');
+    $description = trim($_POST["description"] ?? '');
+    $image_url = trim($_POST["image_url"] ?? '');
+
+    if ($destination_id) {
+        // UPDATE
         $stmt = $conn->prepare("UPDATE destinations SET name=?, country=?, description=?, image_url=? WHERE destination_id=?");
-        $stmt->bind_param("ssssi", $name, $country, $description, $image_url, $_POST['id']);
+        $stmt->bind_param("ssssi", $name, $country, $description, $image_url, $destination_id);
         $stmt->execute();
+        $stmt->close();
     } else {
+        // INSERT
         $stmt = $conn->prepare("INSERT INTO destinations (name, country, description, image_url) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("ssss", $name, $country, $description, $image_url);
         $stmt->execute();
+        $stmt->close();
     }
 
     header("Location: index.php");
@@ -40,25 +54,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title><?php echo $id>0 ? 'Edit' : 'Add'; ?> Destination</title>
-</head>
-<body>
-<h2 align="center"><?php echo $id>0 ? 'Edit' : 'Add'; ?> Destination</h2>
-<form method="POST" style="width:400px; margin:auto;">
-    <input type="hidden" name="id" value="<?php echo $id; ?>">
-    <label>Name:</label><br>
-    <input type="text" name="name" value="<?php echo htmlspecialchars($name); ?>" required><br><br>
-    <label>Country:</label><br>
-    <input type="text" name="country" value="<?php echo htmlspecialchars($country); ?>" required><br><br>
-    <label>Description:</label><br>
-    <textarea name="description" rows="5"><?php echo htmlspecialchars($description); ?></textarea><br><br>
-    <label>Image URL:</label><br>
-    <input type="text" name="image_url" value="<?php echo htmlspecialchars($image_url); ?>"><br><br>
-    <button type="submit"><?php echo $id>0 ? 'Update' : 'Add'; ?></button>
+<h2><?php echo $destination_id ? 'Edit Destination' : 'Add Destination'; ?></h2>
+
+<form method="POST">
+    Name:<br>
+    <input type="text" name="name" value="<?php echo htmlspecialchars($destination['name']); ?>" required><br><br>
+
+    Country:<br>
+    <input type="text" name="country" value="<?php echo htmlspecialchars($destination['country']); ?>" required><br><br>
+
+    Description:<br>
+    <textarea name="description"><?php echo htmlspecialchars($destination['description']); ?></textarea><br><br>
+
+    Image URL:<br>
+    <input type="text" name="image_url" value="<?php echo htmlspecialchars($destination['image_url']); ?>"><br><br>
+
+    <button type="submit"><?php echo $destination_id ? 'Update' : 'Add'; ?></button>
 </form>
-<div align="center"><a href="index.php">← Back to list</a></div>
-</body>
-</html>
+
+<br>
+<a href="index.php">← Back to list</a>
