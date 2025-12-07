@@ -43,24 +43,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
         // LOGIN
-        if ($_POST['action'] === "login") {
+       if ($_POST['action'] === "login") {
 
-            $stmt = $conn->prepare("SELECT * FROM users WHERE username=?");
+            $stmt = $conn->prepare("SELECT user_id, username, password, role FROM users WHERE username=?");
             $stmt->bind_param("s", $username);
             $stmt->execute();
             $res = $stmt->get_result();
 
-            if ($res->num_rows == 1) {
+            if ($res && $res->num_rows == 1) {
 
                 $user = $res->fetch_assoc();
 
                 if (password_verify($password, $user["password"])) {
 
+                    session_regenerate_id(true);
                     $_SESSION['user_id'] = $user['user_id'];
                     $_SESSION['username'] = $user['username'];
-
-                    // GÁN vai trò (vì database không có role)
-                    $_SESSION['role'] = ($user['username'] == "admin") ? "admin" : "user";
+                    $_SESSION['role'] = $user['role'] ?? 'user';
 
                     header("Location: index.php");
                     exit;
