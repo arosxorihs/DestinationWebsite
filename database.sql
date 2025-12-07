@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS travel_db;
-USE travel_db;
+CREATE DATABASE IF NOT EXISTS login_demo;
+USE login_demo;
 
 -- Users table for login only
 CREATE TABLE IF NOT EXISTS users (
