@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS login_demo;
-USE login_demo;
+CREATE DATABASE IF NOT EXISTS travel_db;
+USE travel_db;
 
 -- Users table for login only
 CREATE TABLE IF NOT EXISTS users (
@@ -28,3 +28,16 @@ INSERT INTO users (username, password) VALUES
 INSERT INTO destinations (name, country, description, image_url) VALUES
 ('Bali', 'Indonesia', 'Beautiful beaches, temples, and rice terraces.', 'https://example.com/bali.jpg'),
 ('Paris', 'France', 'The city of love with Eiffel Tower, museums, and cafes.', 'https://example.com/paris.jpg');
+ALTER TABLE destinations ADD COLUMN category VARCHAR(50);
+ALTER TABLE destinations ADD COLUMN province VARCHAR(100);
+
+CREATE TABLE reviews (
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    destination_id INT NOT NULL,
+    user_id INT NOT NULL,
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (destination_id) REFERENCES destinations(destination_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
