@@ -73,10 +73,52 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
+
+$filter_activity_id = (int)($_GET['activity'] ?? 0); // Lay ID hoat dong tu GET
+$activities = []; // Khai bao mang luu danh sach hoat dong
+
+// Truy van danh sach hoat dong tu Database
+$q_act = $conn->query("SELECT activity_id, name FROM activities ORDER BY name");
+if ($q_act) {
+    while ($r_act = $q_act->fetch_assoc()) $activities[] = $r_act;
+}
+
 $logged_in = isset($_SESSION['user_id']);
 
-// FETCH DESTINATIONS – đúng cột destination_id
-$result = $conn->query("SELECT * FROM destinations ORDER BY destination_id DESC");
+
+
+
+if ($logged_in) {
+    // Xay dung truy van
+    $sql = "SELECT d.destination_id, d.name, d.country, d.description
+            FROM destinations d";
+
+    if ($filter_activity_id > 0) {
+        // Neu co bo loc, JOIN voi bang trung gian (destination_activities)
+        $sql .= " INNER JOIN destination_activities da ON d.destination_id = da.destination_id 
+                 WHERE da.activity_id = ?";
+    }
+
+    $sql .= " ORDER BY d.destination_id DESC";
+    
+    // Su dung prepared statement de an toan hon
+    if ($filter_activity_id > 0) {
+        $q = $conn->prepare($sql);
+        $q->bind_param('i', $filter_activity_id);
+        $q->execute();
+        $result = $q->get_result();
+        $q->close();
+    } else {
+        // Neu khong co bo loc, chay truy van don gian
+        $result = $conn->query($sql);
+    }
+} else {
+    // Neu chua dang nhap, gan $result la null de tranh loi trong vong lap HTML
+    $result = null; 
+}
+
+
+
 
 ?>
 <!DOCTYPE html>
@@ -122,6 +164,32 @@ $result = $conn->query("SELECT * FROM destinations ORDER BY destination_id DESC"
 
     <a href="index.php?logout=1">Logout</a>
 </div>
+
+
+
+
+</div>
+<div align="center" style="margin-top: 15px; margin-bottom: 20px;">
+    <form method="GET" style="display: inline-block;">
+        <label for="activity_filter">Loc theo Hoat dong:</label>
+        <select name="activity" id="activity_filter" onchange="this.form.submit()">
+            <option value="0">-- Tat ca Hoat dong --</option>
+            <?php foreach ($activities as $act): ?>
+                <option value="<?= (int)$act['activity_id'] ?>" 
+                        <?= $filter_activity_id === (int)$act['activity_id'] ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($act['name']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <?php if ($filter_activity_id > 0): ?>
+            <a href="index.php" style="margin-left: 10px;">Xoa loc</a> 
+        <?php endif; ?>
+    </form>
+</div>
+<h3 align="center">Destination List</h3>
+
+
+
 
 <h3 align="center">Destination List</h3>
 
