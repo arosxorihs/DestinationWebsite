@@ -26,7 +26,6 @@ $review_stmt = $conn->prepare("
     FROM reviews r 
     JOIN users u ON r.user_id = u.user_id 
     WHERE r.destination_id = ? 
-    ORDER BY r.created_at DESC
 ");
 $review_stmt->bind_param("i", $destination_id);
 $review_stmt->execute();
@@ -109,7 +108,6 @@ $stats = $stats_stmt->get_result()->fetch_assoc();
             <div class="review-item">
                 <div class="review-header">
                     <span class="review-user"><?php echo htmlspecialchars($review['username']); ?></span>
-                    <span class="review-date"><?php echo date('d/m/Y H:i', strtotime($review['created_at'])); ?></span>
                 </div>
                 <div class="review-rating">
                     <?php echo str_repeat('*', $review['rating']); ?> <?php echo $review['rating']; ?>/5
