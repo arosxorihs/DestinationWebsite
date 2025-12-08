@@ -104,3 +104,39 @@ INSERT INTO REVIEW (user_id, destination_id, rating, comment) VALUES
 (3, 1, 4, 'Đẹp nhưng hơi đông người'),
 (2, 2, 5, 'Phố cổ rất thơ mộng, đồ ăn ngon'),
 (3, 3, 4, 'Leo lên đỉnh rất vất vả nhưng xứng đáng');
+
+
+-- tao bang danh sach hoat dong 
+CREATE TABLE activities (
+  activity_id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO activities (name) VALUES
+  ('Boi loi'),
+  ('Cam trai'),
+  ('Ngam canh'),
+  ('Leo nui'),
+  ('Lan bien');
+
+-- tao bang trung gian 
+  CREATE TABLE destination_activities (
+  destination_id INT NOT NULL,
+  activity_id INT NOT NULL,
+  PRIMARY KEY (destination_id, activity_id),
+  CONSTRAINT fk_dest_act_dest
+    FOREIGN KEY (destination_id)
+    REFERENCES destinations(destination_id)
+    ON DELETE CASCADE,
+  CONSTRAINT fk_dest_act_act
+    FOREIGN KEY (activity_id)
+    REFERENCES activities(activity_id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- chen du lieu mau ( lien ket hoat dong voi dia diem)
+INSERT INTO destination_activities (destination_id, activity_id) VALUES
+  (1, 1), -- Bali co Boi loi
+  (1, 3), -- Bali co Ngam canh
+  (2, 3); -- Paris co Ngam canh
