@@ -135,3 +135,5 @@ INSERT INTO reviews (destination_id, user_id, rating, comment) VALUES
 ALTER TABLE users 
 ADD COLUMN remember_token VARCHAR(255) NULL DEFAULT NULL,
 ADD UNIQUE INDEX idx_token (remember_token);
+ALTER TABLE reviews ADD COLUMN parent_id INT NULL;
+ALTER TABLE reviews ADD COLUMN is_admin_reply TINYINT(1) DEFAULT 0;

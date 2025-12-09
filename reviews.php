@@ -4,6 +4,40 @@ include 'config.php';
 
 $destination_id = isset($_GET['destination_id']) && is_numeric($_GET['destination_id']) ? (int)$_GET['destination_id'] : null;
 
+if (isset($_POST['submit_reply']) && isset($_SESSION['user_id']) && $_SESSION['role'] === 'admin') {
+
+    $reply_text = trim($_POST['reply_text']);
+    $parent_id  = (int)$_POST['parent_id'];
+    $user_id    = $_SESSION['user_id'];
+
+    $insertReply = $conn->prepare("
+        INSERT INTO reviews (destination_id, user_id, rating, comment, parent_id, is_admin_reply)
+        VALUES (?, ?, NULL, ?, ?, 1)
+    ");
+
+    $insertReply->bind_param("iisi", $destination_id, $user_id, $reply_text, $parent_id);
+    $insertReply->execute();
+
+    header("Location: reviews.php?destination_id=" . $destination_id);
+    exit;
+}
+
+if (isset($_POST['submit_review']) && isset($_SESSION['user_id'])) {
+    $rating = (int)$_POST['rating'];
+    $comment = trim($_POST['comment']);
+    $user_id = $_SESSION['user_id'];
+
+    $insert = $conn->prepare("
+        INSERT INTO reviews (destination_id, user_id, rating, comment)
+        VALUES (?, ?, ?, ?)
+    ");
+    $insert->bind_param("iiis", $destination_id, $user_id, $rating, $comment);
+    $insert->execute();
+
+    // Reload page để thấy đánh giá mới
+    header("Location: reviews.php?destination_id=" . $destination_id);
+    exit;
+}
 if (!$destination_id) {
     header('Location: index.php');
     exit;
@@ -25,7 +59,7 @@ $review_stmt = $conn->prepare("
     SELECT r.*, u.username 
     FROM reviews r 
     JOIN users u ON r.user_id = u.user_id 
-    WHERE r.destination_id = ? 
+    WHERE r.destination_id = ? AND parent_id IS NULL
 ");
 $review_stmt->bind_param("i", $destination_id);
 $review_stmt->execute();
@@ -99,22 +133,85 @@ $stats = $stats_stmt->get_result()->fetch_assoc();
         <p><?php echo $stats['three_star'] ?? 0; ?> danh gia</p>
     </div>
 </div>
+<?php if (isset($_SESSION['user_id'])): ?>
+    <h3>Viet Danh Gia Cua Ban</h3>
+    <form method="POST">
+        <label>Danh gia sao:</label><br>
+        <select name="rating" required>
+            <option value="5">5 - Tuyet voi</option>
+            <option value="4">4 - Tot</option>
+            <option value="3">3 - Binh thuong</option>
+            <option value="2">2 - Kem</option>
+            <option value="1">1 - Rat te</option>
+        </select><br><br>
 
+        <label>Binh luan:</label><br>
+        <textarea name="comment" rows="4" cols="50" required></textarea><br><br>
+
+        <button type="submit" name="submit_review">Gui Danh Gia</button>
+    </form>
+    <hr>
+<?php else: ?>
+    <p><a href="login.php">Dang nhap</a> de viet danh gia.</p>
+<?php endif; ?>
 <div class="reviews-list">
     <h3>Chi Tiet Danh Gia</h3>
     
     <?php if ($reviews && $reviews->num_rows > 0): ?>
         <?php while ($review = $reviews->fetch_assoc()): ?>
             <div class="review-item">
+                <?php
+                // Lấy danh sách reply của bình luận này
+                $replyStmt = $conn->prepare("
+                    SELECT r.*, u.username 
+                    FROM reviews r 
+                    JOIN users u ON r.user_id = u.user_id
+                    WHERE parent_id = ?
+                    ORDER BY r.review_id ASC
+                ");
+                $replyStmt->bind_param("i", $review['review_id']);
+                $replyStmt->execute();
+                $replies = $replyStmt->get_result();
+                ?>
                 <div class="review-header">
                     <span class="review-user"><?php echo htmlspecialchars($review['username']); ?></span>
                 </div>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                    <a href="review_delete.php?review_id=<?php echo $review['review_id']; ?>&destination_id=<?php echo $destination_id; ?>" 
+                    style="color:red; font-size:12px;"
+                    onclick="return confirm('Bạn có chắc muốn xóa bình luận này?');">
+                    xóa
+                    </a>
+                <?php endif; ?>
+
                 <div class="review-rating">
                     <?php echo str_repeat('*', $review['rating']); ?> <?php echo $review['rating']; ?>/5
                 </div>
                 <div class="review-comment">
                     <?php echo htmlspecialchars($review['comment'] ?? 'Khong co comment'); ?>
                 </div>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                    <form method="POST" style="margin-left:40px; margin-top:10px;">
+                        <input type="hidden" name="parent_id" value="<?php echo $review['review_id']; ?>">
+                        <textarea name="reply_text" rows="2" cols="50" placeholder="Admin trả lời..."></textarea><br>
+                        <button type="submit" name="submit_reply">Gửi trả lời</button>
+                    </form>
+                <?php endif; ?>
+                <?php while ($reply = $replies->fetch_assoc()): ?>
+                    <div style="margin-left:40px; padding:10px; background:#eef; border-left:3px solid #339; margin-top:10px;">
+                        <b>Admin trả lời:</b><br>
+                        <?php echo htmlspecialchars($reply['comment']); ?>
+
+                        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                            <br>
+                                <a href="review_delete.php?review_id=<?php echo $reply['review_id']; ?>&destination_id=<?php echo $destination_id; ?>" 
+                                    style="color:red; font-size:12px;"
+                                    onclick="return confirm('Xóa reply này?');">
+                                    Xóa
+                                </a>
+                        <?php endif; ?>
+                    </div>
+                <?php endwhile; ?>
             </div>
         <?php endwhile; ?>
     <?php else: ?>
