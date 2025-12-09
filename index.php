@@ -161,55 +161,176 @@ if ($is_admin) {
 <html>
 <head>
     <title>Travel Destinations</title>
+
     <style>
-        body { font-family: Arial; margin: 20px; }
-        
-        h2 { color: #333; margin: 20px 0; }
-        h3 { color: #333; margin: 20px 0 15px 0; }
-        
-        .header { text-align: center; margin-bottom: 20px; }
-        .header a { margin: 0 10px; padding: 8px 15px; text-decoration: none; color: white; }
-        .add-btn { background: #28a745; }
-        .add-btn:hover { background: #218838; }
-        .logout-btn { background: #dc3545; }
-        .logout-btn:hover { background: #c82333; }
-        
-        input, button { padding: 8px; margin-top: 5px; }
-        form { width: 300px; margin: auto; }
-        
-        .auth-form { width: 300px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; }
-        .auth-form h3 { text-align: center; }
-        .auth-form input { width: 100%; box-sizing: border-box; }
-        .auth-form button { width: 100%; margin: 5px 0; background: #007bff; color: white; border: none; cursor: pointer; }
-        .auth-form button:hover { background: #0056b3; }
-        
-        .message { padding: 10px; margin: 10px 0; border-radius: 3px; text-align: center; }
-        .message.error { background: #f8d7da; color: #721c24; }
-        .message.success { background: #d4edda; color: #155724; }
-        
-        .filter-section { background: #f5f5f5; padding: 15px; margin: 20px 0; }
-        .filter-section h3 { margin-top: 0; }
-        .filter-form { display: flex; gap: 10px; align-items: flex-end; }
-        .filter-group { display: flex; flex-direction: column; }
-        .filter-group label { font-weight: bold; margin-bottom: 3px; }
-        .filter-group select { padding: 8px; }
-        .filter-btn { padding: 8px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
-        .filter-btn:hover { background: #0056b3; }
-        .reset-btn { padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; }
-        .reset-btn:hover { background: #5a6268; }
-        
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th { background: #f2f2f2; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; }
-        td { padding: 12px; border-bottom: 1px solid #ddd; }
-        tr:hover { background: #f9f9f9; }
-        
-        .action-links { white-space: nowrap; }
-        .action-links a { margin: 2px; padding: 5px 8px; text-decoration: none; color: white; font-size: 12px; display: inline-block; }
-        .action-links a.view { background: #17a2b8; }
-        .action-links a.edit { background: #ffc107; color: black; }
-        .action-links a.delete { background: #dc3545; }
-        .action-links a:hover { opacity: 0.8; }
+       body {
+  background: #f5f7fa;
+  font-family: "Poppins", sans-serif;
+  margin: 20px;
+  padding: 0;
+  color: #333;
+}
+
+h2, h3 {
+  color: #333;
+  margin: 20px 0 15px 0;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.header a {
+  margin: 0 10px;
+  padding: 8px 15px;
+  text-decoration: none;
+  color: white;
+}
+.add-btn {
+  background: #28a745;
+}
+.add-btn:hover {
+  background: #218838;
+}
+.logout-btn {
+  background: #dc3545;
+}
+.logout-btn:hover {
+  background: #c82333;
+}
+
+.filter-section {
+  background: #f5f5f5;
+  padding: 15px;
+  margin: 20px 0;
+}
+.filter-form {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+.filter-group label {
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+.filter-group select {
+  padding: 8px;
+}
+.filter-btn, .reset-btn {
+  padding: 8px 15px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: white;
+}
+.filter-btn {
+  background: #007bff;
+}
+.filter-btn:hover {
+  background: #0056b3;
+}
+.reset-btn {
+  background: #6c757d;
+}
+.reset-btn:hover {
+  background: #5a6268;
+}
+
+/* ===== STYLE CHO CARD / GRID DESTINATIONS ===== */
+.places-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.place-card {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: calc(33.333% - 20px);
+  display: flex;
+  flex-direction: column;
+}
+
+.place-card-img img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.place-card-body {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.place-title {
+  margin: 0 0 10px 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.place-description {
+  flex: 1;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.place-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+  flex: 1;
+  transition: background 0.2s;
+}
+
+.view-btn { background: #007bff; }
+.edit-btn { background: #28a745; }
+.delete-btn { background: #dc3545; }
+
+.view-btn:hover { background: #0056b3; }
+.edit-btn:hover { background: #1e7e34; }
+.delete-btn:hover { background: #a71d2a; }
+
+@media (max-width: 900px) {
+  .place-card { width: calc(50% - 20px); }
+}
+@media (max-width: 600px) {
+  .place-card { width: 100%; }
+}
+
+/* ===== Style cho nút, form ... giữ lại nếu bạn có phần form / login / filter ===== */
+input, select, button {
+  padding: 8px;
+  box-sizing: border-box;
+}
+a {
+  text-decoration: none;
+}
+
     </style>
+
+.places-list { display: flex; flex-wrap: wrap; gap: 20px; }
+.place-card { … }
+
+
 </head>
 
 <body>
@@ -288,60 +409,32 @@ if ($is_admin) {
 
     <h3>Destination List</h3>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Country</th>
-                <?php if ($is_admin): ?>
-                    <th>Category</th>
-                    <th>Province</th>
-                <?php endif; ?>
-                <th>Description</th>
-                <th>Rating</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if ($result && $result->num_rows > 0): ?>
-                <?php while ($row = $result->fetch_assoc()): ?>
-                    <?php
-                    $review_stmt = $conn->prepare("SELECT AVG(rating) as avg_rating, COUNT(*) as review_count FROM reviews WHERE destination_id = ?");
-                    $review_stmt->bind_param("i", $row['destination_id']);
-                    $review_stmt->execute();
-                    $review_result = $review_stmt->get_result();
-                    $review_data = $review_result->fetch_assoc();
-                    $avg_rating = $review_data['avg_rating'] ? round($review_data['avg_rating'], 1) : 'N/A';
-                    $review_count = $review_data['review_count'] ?? 0;
-                    ?>
-                    <tr>
-                        <td><?php echo $row['destination_id']; ?></td>
-                        <td><?php echo htmlspecialchars($row['name']); ?></td>
-                        <td><?php echo htmlspecialchars($row['country']); ?></td>
-                        <?php if ($is_admin): ?>
-                            <td><?php echo htmlspecialchars($row['category'] ?? 'N/A'); ?></td>
-                            <td><?php echo htmlspecialchars($row['province'] ?? 'N/A'); ?></td>
-                        <?php endif; ?>
-                        <td><?php echo htmlspecialchars(substr($row['description'], 0, 60)); ?>...</td>
-                        <td>* <?php echo $avg_rating; ?> (<?php echo $review_count; ?>)</td>
-                        <td class="action-links">
-                            <a href="detail.php?id=<?php echo $row['destination_id']; ?>" class="view">View</a>
-                            <a href="reviews.php?destination_id=<?php echo $row['destination_id']; ?>" class="view">Reviews</a>
-                            <?php if ($is_admin): ?>
-                                <a href="form.php?id=<?php echo $row['destination_id']; ?>" class="edit">Edit</a>
-                                <a href="delete_destination.php?id=<?php echo $row['destination_id']; ?>" class="delete" onclick="return confirm('Delete this item?');">Delete</a>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="<?php echo $is_admin ? '8' : '6'; ?>" style="text-align: center;">No data available</td>
-                </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
+   <div class="places-list">
+  <?php while ($row = $result->fetch_assoc()): 
+       $img = !empty($row['image_url']) ? $row['image_url'] : 'default.jpg';
+  ?>
+    <div class="place-card">
+      <div class="place-card-img">
+        <img src="<?= htmlspecialchars($img) ?>" alt="<?= htmlspecialchars($row['name']) ?>">
+      </div>
+      <div class="place-card-body">
+        <h2 class="place-title"><?= htmlspecialchars($row['name']) ?></h2>
+        <p class="place-description"><?= nl2br(htmlspecialchars($row['description'] ?? '')) ?></p>
+        <div class="place-actions">
+          <a href="detail.php?id=<?= $row['destination_id'] ?>" class="action-btn view-btn">View</a>
+          <a href="reviews.php?destination_id=<?= $row['destination_id'] ?>" class="action-btn view-btn">Reviews</a>
+          <?php if ($is_admin): ?>
+            <a href="form.php?id=<?= $row['destination_id'] ?>" class="action-btn edit-btn">Edit</a>
+            <a href="delete_destination.php?id=<?= $row['destination_id'] ?>"
+               class="action-btn delete-btn"
+               onclick="return confirm('Delete this item?');">Delete</a>
+          <?php endif; ?>
+        </div>
+      </div>
+    </div>
+  <?php endwhile; ?>
+</div>
+
 <?php endif; ?>
 
 </body>
