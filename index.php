@@ -1,13 +1,47 @@
 <?php
 session_start();
 include 'config.php';
+include 'cookie.php';
 
-//// LOGOUT
+// AUTO LOGIN VIA COOKIE
+if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token'])) {
+
+    $token = $_COOKIE['remember_token'];
+
+    $stmt = $conn->prepare("SELECT user_id, username, role FROM cookies 
+                            JOIN users ON cookies.user_id = users.user_id
+                            WHERE token = ? AND expires_at > NOW()");
+    $stmt->bind_param("s", $token);
+    $stmt->execute();
+    $res = $stmt->get_result();
+
+    if ($res && $res->num_rows === 1) {
+        $user = $res->fetch_assoc();
+
+        $_SESSION['user_id']  = $user['user_id'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['role']     = $user['role'];
+    }
+}
+
+// LOGOUT
 if (isset($_GET['logout'])) {
+
+    // Xoá cookie
+    setcookie("remember_token", "", time() - 3600, "/");
+
+    // Xoá token trong DB
+    if (isset($_SESSION['user_id'])) {
+        $stmt = $conn->prepare("DELETE FROM cookies WHERE user_id = ?");
+        $stmt->bind_param("i", $_SESSION['user_id']);
+        $stmt->execute();
+    }
+
     session_destroy();
     header("Location: index.php");
     exit;
 }
+
 
 $message = "";
 
@@ -59,7 +93,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $_SESSION['user_id'] = $user['user_id'];
                     $_SESSION['username'] = $user['username'];
                     $_SESSION['role'] = $user['role'] ?? 'user';
+                    if (isset($_POST['remember'])) {
+                        $token = bin2hex(random_bytes(32));
 
+                        // Lưu vào DB
+                        $stmt = $conn->prepare("INSERT INTO cookies (user_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 30 DAY))");
+                        $stmt->bind_param("is", $user['user_id'], $token);
+                        $stmt->execute();
+
+                        // Set cookie
+                        setcookie("remember_token", $token, time() + 86400 * 30, "/", "", false, true);
+                    }
                     header("Location: index.php");
                     exit;
                 } else {
@@ -184,6 +228,9 @@ if ($is_admin) {
         <form method="POST">
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
+            
+            <label><input type="checkbox" name="remember"> Remember me</label>
+            
             <button type="submit" name="action" value="login">Login</button>
             <button type="submit" name="action" value="register">Register</button>
         </form>
