@@ -9,9 +9,18 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
 }
 
 $destination_id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : null;
-$destination = ['name'=>'', 'country'=>'', 'description'=>'', 'category'=>'', 'province'=>'', 'image_url'=>''];
 
-// If id exists => EDIT mode
+// Khởi tạo dữ liệu mặc định
+$destination = [
+    'name' => '',
+    'country' => '',
+    'description' => '',
+    'image_url' => '',
+    'category' => '',
+    'province' => ''
+];
+
+// Nếu đang sửa → lấy dữ liệu cũ
 if ($destination_id) {
     $stmt = $conn->prepare("SELECT * FROM destinations WHERE destination_id = ?");
     $stmt->bind_param("i", $destination_id);
@@ -25,112 +34,115 @@ if ($destination_id) {
     }
 }
 
-// Handle POST for both Add and Edit
+// Xử lý lưu (thêm hoặc sửa)
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $name = trim($_POST["name"] ?? '');
-    $country = trim($_POST["country"] ?? '');
+    $name        = trim($_POST["name"] ?? '');
+    $country     = trim($_POST["country"] ?? '');
     $description = trim($_POST["description"] ?? '');
-    $category = trim($_POST["category"] ?? '');
-    $province = trim($_POST["province"] ?? '');
-    $image_url = trim($_POST["image_url"] ?? '');
+    $image_url   = trim($_POST["image_url"] ?? '');  // Có thể để trống
+    $category    = trim($_POST["category"] ?? '');
+    $province    = trim($_POST["province"] ?? '');
 
     if ($destination_id) {
-        // UPDATE
-        $stmt = $conn->prepare("UPDATE destinations SET name=?, country=?, description=?, category=?, province=?, image_url=? WHERE destination_id=?");
-        $stmt->bind_param("ssssssi", $name, $country, $description, $category, $province, $image_url, $destination_id);
-        $stmt->execute();
-        $stmt->close();
+        // CẬP NHẬT
+        $stmt = $conn->prepare("UPDATE destinations SET name=?, country=?, description=?, image_url=?, category=?, province=? WHERE destination_id=?");
+        $stmt->bind_param("ssssssi", $name, $country, $description, $image_url, $category, $province, $destination_id);
     } else {
-        // INSERT
-        $stmt = $conn->prepare("INSERT INTO destinations (name, country, description, category, province, image_url) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssss", $name, $country, $description, $category, $province, $image_url);
-        $stmt->execute();
-        $stmt->close();
+        // THÊM MỚI
+        $stmt = $conn->prepare("INSERT INTO destinations (name, country, description, image_url, category, province) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssss", $name, $country, $description, $image_url, $category, $province);
     }
 
-    header("Location: index.php");
+    $stmt->execute();
+    $stmt->close();
+    header("Location: index.php?success=1");
     exit;
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <title><?php echo $destination_id ? 'Edit Destination' : 'Add Destination'; ?></title>
+    <meta charset="UTF-8">
+    <title><?= $destination_id ? 'Sửa Điểm Đến' : 'Thêm Điểm Đến Mới' ?></title>
     <style>
-        body { font-family: Arial; margin: 20px; }
-        h2 { color: #333; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input[type="text"], input[type="url"], textarea, select { 
-            width: 100%; 
-            padding: 8px; 
-            border: 1px solid #ddd; 
-            box-sizing: border-box;
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        h2 { color: #333; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; color: #555; }
+        input[type="text"], textarea, select {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;
         }
-        textarea { resize: vertical; min-height: 80px; }
-        button { padding: 8px 15px; background: #28a745; color: white; border: none; cursor: pointer; margin-right: 10px; }
+        textarea { min-height: 120px; resize: vertical; }
+        button {
+            background: #28a745; color: white; padding: 12px 30px; border: none; border-radius: 6px;
+            font-size: 16px; cursor: pointer;
+        }
         button:hover { background: #218838; }
-        .back-link { padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; display: inline-block; }
+        .back-link {
+            display: inline-block; margin-left: 15px; padding: 12px 25px; background: #6c757d;
+            color: white; text-decoration: none; border-radius: 6px;
+        }
         .back-link:hover { background: #5a6268; }
-        .image-preview { margin-top: 10px; max-width: 300px; }
-        .image-preview img { max-width: 100%; border: 1px solid #ddd; }
+        .note { font-size: 14px; color: #666; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-<h2><?php echo $destination_id ? 'Edit Destination' : 'Add Destination'; ?></h2>
+<div class="container">
+    <h2><?= $destination_id ? 'Sửa Điểm Đến' : 'Thêm Điểm Đến Mới' ?></h2>
 
-<form method="POST">
-    <div class="form-group">
-        <label>Name:</label>
-        <input type="text" name="name" value="<?php echo htmlspecialchars($destination['name']); ?>" required>
-    </div>
+    <form method="POST">
+        <div class="form-group">
+            <label>Tên Địa Điểm *</label>
+            <input type="text" name="name" value="<?= htmlspecialchars($destination['name']) ?>" required>
+        </div>
 
-    <div class="form-group">
-        <label>Country:</label>
-        <input type="text" name="country" value="<?php echo htmlspecialchars($destination['country']); ?>" required>
-    </div>
+        <div class="form-group">
+            <label>Quốc Gia *</label>
+            <input type="text" name="country" value="<?= htmlspecialchars($destination['country']) ?>" required>
+        </div>
 
-    <div class="form-group">
-        <label>Category:</label>
-        <select name="category" required>
-            <option value="">-- Select Category --</option>
-            <option value="Beach" <?php echo ($destination['category'] === 'Beach') ? 'selected' : ''; ?>>Beach</option>
-            <option value="Mountain" <?php echo ($destination['category'] === 'Mountain') ? 'selected' : ''; ?>>Mountain</option>
-            <option value="History" <?php echo ($destination['category'] === 'History') ? 'selected' : ''; ?>>History</option>
-            <option value="Culture" <?php echo ($destination['category'] === 'Culture') ? 'selected' : ''; ?>>Culture</option>
-            <option value="Forest" <?php echo ($destination['category'] === 'Forest') ? 'selected' : ''; ?>>Forest</option>
-            <option value="City" <?php echo ($destination['category'] === 'City') ? 'selected' : ''; ?>>City</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label>Province:</label>
-        <input type="text" name="province" value="<?php echo htmlspecialchars($destination['province']); ?>" placeholder="e.g. Hanoi, Da Nang..." required>
-    </div>
-
-    <div class="form-group">
-        <label>Description:</label>
-        <textarea name="description"><?php echo htmlspecialchars($destination['description']); ?></textarea>
-    </div>
-
-    <div class="form-group">
-        <label>Image URL:</label>
-        <input type="url" name="image_url" value="<?php echo htmlspecialchars($destination['image_url']); ?>" placeholder="https://example.com/image.jpg">
-        
-        <?php if (!empty($destination['image_url'])): ?>
-            <div class="image-preview">
-                <p>Current Image:</p>
-                <img src="<?php echo htmlspecialchars($destination['image_url']); ?>" alt="Destination Image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%23ddd%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3EImage Not Found%3C/text%3E%3C/svg%3E';">
+        <div class="form-group">
+            <label>Link Ảnh Minh Họa (Image URL)</label>
+            <input type="text" name="image_url" value="<?= htmlspecialchars($destination['image_url']) ?>"
+                   placeholder="https://example.com/photo.jpg (để trống sẽ dùng ảnh mặc định)">
+            <div class="note">
+                Gợi ý: Dùng ảnh từ <a href="https://unsplash.com" target="_blank">Unsplash</a>, 
+                <a href="https://pexels.com" target="_blank">Pexels</a> hoặc <a href="https://imgbb.com" target="_blank">ImgBB</a>
             </div>
-        <?php endif; ?>
-    </div>
+        </div>
 
-    <button type="submit"><?php echo $destination_id ? 'Update' : 'Add'; ?></button>
-    <a href="index.php" class="back-link">Back</a>
-</form>
+        <div class="form-group">
+            <label>Danh Mục *</label>
+            <select name="category" required>
+                <option value="">-- Chọn danh mục --</option>
+                <option value="Beach"    <?= $destination['category']==='Beach' ? 'selected':'' ?>>Bãi Biển</option>
+                <option value="Mountain" <?= $destination['category']==='Mountain' ? 'selected':'' ?>>Núi</option>
+                <option value="History"  <?= $destination['category']==='History' ? 'selected':'' ?>>Lịch Sử</option>
+                <option value="Culture"  <?= $destination['category']==='Culture' ? 'selected':'' ?>>Văn Hóa</option>
+                <option value="Forest"   <?= $destination['category']==='Forest' ? 'selected':'' ?>>Rừng</option>
+                <option value="City"     <?= $destination['category']==='City' ? 'selected':'' ?>>Thành Phố</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Tỉnh/Thành Phố</label>
+            <input type="text" name="province" value="<?= htmlspecialchars($destination['province']) ?>"
+                   placeholder="Ví dụ: Đà Nẵng, Hà Nội, Quảng Ninh...">
+        </div>
+
+        <div class="form-group">
+            <label>Mô Tả</label>
+            <textarea name="description"><?= htmlspecialchars($destination['description']) ?></textarea>
+        </div>
+
+        <button type="submit"><?= $destination_id ? 'Cập Nhật' : 'Thêm Mới' ?></button>
+        <a href="index.php" class="back-link">Quay Lại Dashboard</a>
+    </form>
+</div>
 
 </body>
 </html>
