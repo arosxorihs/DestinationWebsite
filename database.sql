@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS destinations (
     name VARCHAR(100) NOT NULL,
     country VARCHAR(100) NOT NULL,
     description TEXT,
-    image_url VARCHAR(255),
+    image_url VARCHAR(10000),
      category VARCHAR(50),
     province VARCHAR(100)
 );
@@ -46,23 +46,24 @@ INSERT INTO users (username, password, role) VALUES
 
 -- Thêm destinations
 INSERT INTO destinations (name, country, description, image_url, category, province) VALUES
-('Bali', 'Indonesia', 'Beautiful beaches, temples, and rice terraces.', 'https://example.com/bali.jpg', 'Beach', 'Bali Province'),
-('Paris', 'France', 'The city of love with Eiffel Tower, museums, and cafes.', 'https://example.com/paris.jpg', 'City', 'Île-de-France'),
-('Ha Long Bay', 'Vietnam', 'UNESCO World Heritage site with stunning limestone karsts and emerald waters.', 'https://example.com/halong.jpg', 'Nature', 'Quang Ninh'),
-('Hoi An Ancient Town', 'Vietnam', 'Charming historic town with lanterns, ancient architecture, and riverside beauty.', 'https://example.com/hoian.jpg', 'Cultural', 'Quang Nam'),
-('Phu Quoc Island', 'Vietnam', 'Tropical paradise with pristine beaches and clear blue waters.', 'https://example.com/phuquoc.jpg', 'Beach', 'Kien Giang'),
-('Sapa', 'Vietnam', 'Mountain town with terraced rice fields and ethnic minority villages.', 'https://example.com/sapa.jpg', 'Mountain', 'Lao Cai'),
-('Da Lat', 'Vietnam', 'Cool highland city known for flowers, waterfalls, and French colonial architecture.', 'https://example.com/dalat.jpg', 'Mountain', 'Lam Dong'),
-('Tokyo', 'Japan', 'Vibrant metropolis blending traditional culture with modern technology.', 'https://example.com/tokyo.jpg', 'City', 'Tokyo Prefecture'),
-('Kyoto', 'Japan', 'Ancient capital with beautiful temples, gardens, and geisha districts.', 'https://example.com/kyoto.jpg', 'Cultural', 'Kyoto Prefecture'),
-('Santorini', 'Greece', 'Iconic white-washed buildings with blue domes overlooking the Aegean Sea.', 'https://example.com/santorini.jpg', 'Beach', 'South Aegean'),
-('Barcelona', 'Spain', 'Artistic city with Gaudi architecture, beaches, and vibrant nightlife.', 'https://example.com/barcelona.jpg', 'City', 'Catalonia'),
-('Swiss Alps', 'Switzerland', 'Majestic mountains perfect for skiing, hiking, and breathtaking views.', 'https://example.com/swiss-alps.jpg', 'Mountain', 'Various Cantons'),
-('Maldives', 'Maldives', 'Luxury overwater bungalows and crystal-clear tropical waters.', 'https://example.com/maldives.jpg', 'Beach', 'Male Atoll'),
-('New York City', 'USA', 'The city that never sleeps with iconic landmarks and diverse culture.', 'https://example.com/nyc.jpg', 'City', 'New York'),
-('Machu Picchu', 'Peru', 'Ancient Incan citadel set high in the Andes Mountains.', 'https://example.com/machu-picchu.jpg', 'Cultural', 'Cusco'),
-('Great Barrier Reef', 'Australia', 'World largest coral reef system with incredible marine life.', 'https://example.com/great-barrier.jpg', 'Nature', 'Queensland'),
-('Dubai', 'UAE', 'Futuristic city with luxury shopping, ultramodern architecture, and desert adventures.', 'https://example.com/dubai.jpg', 'City', 'Dubai Emirate');
+('Bali', 'Indonesia', 'Beautiful beaches, temples, and rice terraces.', 'https://th.bing.com/th/id/R.797f10311478899b73037d563d76b7f4?rik=YFVY3Y0Qrr%2fiGA&pid=ImgRaw&r=0', 'Beach', 'Bali Province'),
+('Paris', 'France', 'The city of love with Eiffel Tower, museums, and cafes.', 'https://www.ana.co.jp/www2/plan-book/where-we-travel/paris/paris-01.jpg', 'City', 'Île-de-France'),
+('Ha Long Bay', 'Vietnam', 'UNESCO World Heritage site with stunning limestone karsts and emerald waters.', 'https://th.bing.com/th/id/R.add756f6f7c6361b71a8307f53b3da79?rik=Yd9cn1CO0F5emQ&riu=http%3a%2f%2fhdqwalls.com%2fwallpapers%2fha-long-bay-1d.jpg&ehk=Ags1lxH2zRSmlD0bTS70UYr8xF2jAtLpTdX6dvujrnc%3d&risl=1&pid=ImgRaw&r=0', 'Nature', 'Quang Ninh'),
+('Hoi An Ancient Town', 'Vietnam', 'Charming historic town with lanterns, ancient architecture, and riverside beauty.', 'https://vietnamtour.com/images/Vietnam_Attractions/Quang_Nam/Hoi-An-Ancient-Town-2_477af.jpg', 'Cultural', 'Quang Nam'),
+('Phu Quoc Island', 'Vietnam', 'Tropical paradise with pristine beaches and clear blue waters.', 'https://phuquoctrip.com/files/images/daily_tour/land_tour_1/land_tour_01_05.jpg', 'Beach', 'Kien Giang'),
+('Sapa', 'Vietnam', 'Mountain town with terraced rice fields and ethnic minority villages.', 'https://impresstravel.com/wp-content/uploads/2021/04/Sapa-Banner.jpg', 'Mountain', 'Lao Cai'),
+('Da Lat', 'Vietnam', 'Cool highland city known for flowers, waterfalls, and French colonial architecture.', 'https://i0.wp.com/vndiscovery.org/wp-content/uploads/2023/02/da-lat-mountain-tour.jpg?ssl=1', 'Mountain', 'Lam Dong'),
+('Tokyo', 'Japan', 'Vibrant metropolis blending traditional culture with modern technology.', 'https://tse1.mm.bing.net/th/id/OIP.IurV-F_R418c8JDGOs2WzwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3', 'City', 'Tokyo Prefecture'),
+('Kyoto', 'Japan', 'Ancient capital with beautiful temples, gardens, and geisha districts.','https://content.r9cdn.net/rimg/dimg/83/d4/85f68013-city-20339-16489ec9b8b.jpg?width=1750&height=1000&xhint=1444&yhint=1011&crop=true', 'Cultural', 'Kyoto Prefecture'),
+('Santorini', 'Greece', 'Iconic white-washed buildings with blue domes overlooking the Aegean Sea.', 'https://th.bing.com/th/id/R.8bab0e8ee044b11f90a6ca927d259308?rik=38WH3eiS7cR7sg&pid=ImgRaw&r=0', 'Beach', 'South Aegean'),
+('Barcelona', 'Spain', 'Artistic city with Gaudi architecture, beaches, and vibrant nightlife.', 'https://th.bing.com/th/id/R.a9a6de9f5f859c3dbd555c636a23787e?rik=6UNIhNjGGS6Clw&riu=http%3a%2f%2fcdn.wallpapersafari.com%2f61%2f89%2fXha7ol.jpg&ehk=iPm1EnEOuQDRFnhJwp22UbBbfrPiSg%2fiv%2bFKa4fN4h4%3d&risl=&pid=ImgRaw&r=0', 'City', 'Catalonia'),
+('Swiss Alps', 'Switzerland', 'Majestic mountains perfect for skiing, hiking, and breathtaking views.', 'https://th.bing.com/th/id/R.fbe6c99732a9658f304b6b79489c5cba?rik=G%2b%2fcdYPIIVIQcQ&pid=ImgRaw&r=0', 'Mountain', 'Various Cantons'),
+('Maldives', 'Maldives', 'Luxury overwater bungalows and crystal-clear tropical waters.', 'https://www.agoda.com/wp-content/uploads/2023/09/Hero-image-Maldives.jpg', 'Beach', 'Male Atoll'),
+('New York City', 'USA', 'The city that never sleeps with iconic landmarks and diverse culture.', 'https://tse2.mm.bing.net/th/id/OIP.oa-osefimDHwX0zc0BHSEwHaE8?rs=1&pid=ImgDetMain&o=7&rm=3', 'City', 'New York'),
+('Machu Picchu', 'Peru', 'Ancient Incan citadel set high in the Andes Mountains.', 'https://upload.wikimedia.org/wikipedia/commons/8/8a/Machu_Picchu_Peru.JPG', 'Cultural', 'Cusco'),
+('Great Barrier Reef', 'Australia', 'World largest coral reef system with incredible marine life.', 'https://www.australiangeographic.com.au/wp-content/uploads/2018/06/great-barrier-reef-hardy.jpg', 'Nature', 'Queensland'),
+('Dubai', 'UAE', 'Futuristic city with luxury shopping, ultramodern architecture, and desert adventures.', 'https://a.cdn-hotels.com/gdcs/production121/d772/6b5a9a4c-fd06-4bcf-b2f0-d979e3704cf9.jpg', 'City', 'Dubai Emirate');
+
 
 INSERT INTO reviews (destination_id, user_id, rating, comment) VALUES
 -- Reviews cho Bali (destination_id = 1)
@@ -135,5 +136,13 @@ INSERT INTO reviews (destination_id, user_id, rating, comment) VALUES
 ALTER TABLE users 
 ADD COLUMN remember_token VARCHAR(255) NULL DEFAULT NULL,
 ADD UNIQUE INDEX idx_token (remember_token);
-ALTER TABLE reviews ADD COLUMN parent_id INT NULL;
-ALTER TABLE reviews ADD COLUMN is_admin_reply TINYINT(1) DEFAULT 0;
+CREATE TABLE IF NOT EXISTS blogs (
+    blog_id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    user_id INT NOT NULL,
+    destination_id INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (destination_id) REFERENCES destinations(destination_id) ON DELETE SET NULL
+);

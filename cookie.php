@@ -1,17 +1,17 @@
 <?php
-// Nếu đã đăng nhập thì không cần check cookie nữa
+// cookie.php – Auto login bằng Remember me token
+// Đặt file này ở thư mục gốc (cùng cấp với index.php, landing.php)
+
 if (isset($_SESSION['user_id'])) {
-    return;
+    return; // Đã login rồi thì không cần check cookie nữa
 }
 
-// Nếu không có cookie => không làm gì
 if (!isset($_COOKIE['remember_token'])) {
-    return;
+    return; // Không có cookie thì thôi
 }
 
 $token = $_COOKIE['remember_token'];
 
-// Kiểm tra token trong DB
 $stmt = $conn->prepare("
     SELECT u.user_id, u.username, u.role 
     FROM cookies c
@@ -26,11 +26,12 @@ $result = $stmt->get_result();
 if ($result->num_rows === 1) {
     $user = $result->fetch_assoc();
 
-    // Auto login
-    $_SESSION['user_id'] = $user['user_id'];
+    // Tự động đăng nhập
+    $_SESSION['user_id']  = $user['user_id'];
     $_SESSION['username'] = $user['username'];
-    $_SESSION['role'] = $user['role'];
+    $_SESSION['role']     = $user['role'];
 
-    // Refresh cookie thời gian
+    // Gia hạn cookie thêm 30 ngày
     setcookie("remember_token", $token, time() + 86400 * 30, "/", "", false, true);
 }
+?>
