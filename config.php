@@ -1,8 +1,9 @@
 <?php
-$servername = "localhost";
-$username   = "root";
-$password   = "";
-$dbname     = "travel_db";  // ⬅ đúng tên database bạn tạo
+$servername = "sql100.infinityfree.com";
+$username = "if0_40575788";
+$password = "nhom12345678";
+$dbname = "if0_40575788_destinations";
+$port = 3306;
 
 // Tạo kết nối
 $conn = new mysqli($servername, $username, $password, $dbname);
