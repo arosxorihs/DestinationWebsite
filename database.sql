@@ -23,7 +23,7 @@ CREATE TABLE reviews (
     destination_id INT NOT NULL,
     user_id INT NOT NULL,
     rating INT CHECK (rating BETWEEN 1 AND 5),
-    comment TEXT,
+    comment  TEXT,
     FOREIGN KEY (destination_id) REFERENCES destinations(destination_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
@@ -36,6 +36,18 @@ CREATE TABLE IF NOT EXISTS cookies (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
         ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS blogs (
+    blog_id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    user_id INT NOT NULL,
+    destination_id INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (destination_id) REFERENCES destinations(destination_id) ON DELETE SET NULL
+);
+
 -- Sample users (including 1 admin)
 INSERT INTO users (username, password, role) VALUES
 ('admin', '$2y$10$anPnS1M3p6HQ4pLqDobY/OX2L7CAvQou3Ctv6hhQrCXVtqvdqZ1nu', 'admin'),
@@ -134,13 +146,19 @@ INSERT INTO reviews (destination_id, user_id, rating, comment) VALUES
 ALTER TABLE users 
 ADD COLUMN remember_token VARCHAR(255) NULL DEFAULT NULL,
 ADD UNIQUE INDEX idx_token (remember_token);
-CREATE TABLE IF NOT EXISTS blogs (
-    blog_id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    content TEXT NOT NULL,
-    user_id INT NOT NULL,
-    destination_id INT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (destination_id) REFERENCES destinations(destination_id) ON DELETE SET NULL
-);
+
+-- 1. Thêm reply review
+ALTER TABLE reviews
+ADD parent_id INT NULL,
+ADD CONSTRAINT fk_review_parent
+FOREIGN KEY (parent_id) REFERENCES reviews(review_id)
+ON DELETE CASCADE;
+
+-- 2. Fix lỗi không xóa destination
+ALTER TABLE reviews DROP FOREIGN KEY reviews_ibfk_1;
+
+ALTER TABLE reviews
+ADD CONSTRAINT reviews_ibfk_1
+FOREIGN KEY (destination_id)
+REFERENCES destinations(destination_id)
+ON DELETE CASCADE;
