@@ -3,7 +3,7 @@ session_start();
 include 'config.php';
 include 'cookie.php';
 
-// ================== LẤY THAM SỐ FILTER ==================
+// LẤY THAM SỐ FILTER
 $category = trim($_GET['category'] ?? '');
 $province = trim($_GET['province'] ?? '');
 $search   = trim($_GET['search'] ?? '');
@@ -12,7 +12,7 @@ $page  = max(1, (int)($_GET['page'] ?? 1));
 $limit = 12;
 $offset = ($page - 1) * $limit;
 
-// ================== ĐẾM TỔNG ==================
+// ĐẾM TỔNG
 $count_query = "SELECT COUNT(*) FROM destinations WHERE 1=1";
 $count_params = [];
 $count_types  = '';
@@ -27,7 +27,7 @@ $stmt_count->execute();
 $total = $stmt_count->get_result()->fetch_row()[0];
 $pages = ceil($total / $limit);
 
-// ================== LẤY DATA ==================
+// LẤY DATA 
 $query = "SELECT * FROM destinations WHERE 1=1";
 $params = [];
 $types  = '';
@@ -88,6 +88,7 @@ $result = $stmt->get_result();
             <a href="landing.php">Trang Chủ</a>
             <a href="destinations.php">Điểm Đến</a>
             <a href="all_reviews.php">Reviews</a>
+            <a href="blogs.php">Blog</a>
             <?php if (!isset($_SESSION['user_id'])): ?>
                 <a href="login.php" class="btn">Đăng Nhập</a>
             <?php else: ?>
