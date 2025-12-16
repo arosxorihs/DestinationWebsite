@@ -23,10 +23,19 @@ CREATE TABLE reviews (
     destination_id INT NOT NULL,
     user_id INT NOT NULL,
     rating INT CHECK (rating BETWEEN 1 AND 5),
-    comment  TEXT,
-    FOREIGN KEY (destination_id) REFERENCES destinations(destination_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    comment TEXT,
+
+    CONSTRAINT fk_reviews_destination
+        FOREIGN KEY (destination_id)
+        REFERENCES destinations(destination_id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_reviews_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(user_id)
+        ON DELETE CASCADE
 );
+
 CREATE TABLE IF NOT EXISTS cookies (
     cookie_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -154,11 +163,3 @@ ADD CONSTRAINT fk_review_parent
 FOREIGN KEY (parent_id) REFERENCES reviews(review_id)
 ON DELETE CASCADE;
 
--- 2. Fix lỗi không xóa destination
-ALTER TABLE reviews DROP FOREIGN KEY reviews_ibfk_1;
-
-ALTER TABLE reviews
-ADD CONSTRAINT reviews_ibfk_1
-FOREIGN KEY (destination_id)
-REFERENCES destinations(destination_id)
-ON DELETE CASCADE;
