@@ -86,14 +86,18 @@ $result = $stmt->get_result();
         <div class="logo">TravelDest</div>
         <div class="nav-menu">
             <a href="landing.php">Trang Chủ</a>
-            <a href="destinations.php">Điểm Đến</a>
+            <a href="destinations.php"><strong>Điểm Đến</strong></a>
             <a href="all_reviews.php">Reviews</a>
             <a href="blogs.php">Blog</a>
             <?php if (!isset($_SESSION['user_id'])): ?>
                 <a href="login.php" class="btn">Đăng Nhập</a>
             <?php else: ?>
-                <span>Xin chào, <?=htmlspecialchars($_SESSION['username'])?></span>
-                <a href="logout.php" class="btn" style="background:#dc3545;">Đăng Xuất</a>
+                <?php $is_admin = ($_SESSION['role'] ?? 'user') === 'admin';?>
+                <span>Xin chào, <?= htmlspecialchars($_SESSION['username']) ?></span>
+                <?php if ($is_admin): ?>
+                    <a href="index.php" class="btn">Dashboard</a>
+                <?php endif; ?>
+                <a href="logout.php" class="btn btn-logout">Đăng Xuất</a>
             <?php endif; ?>
         </div>
     </div>

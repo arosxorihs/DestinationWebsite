@@ -109,17 +109,21 @@ $reviews = $conn->query("SELECT r.comment, r.rating, u.username, d.name as place
 <body>
 
 <header>
-    <div class="container nav">
+    <div class="nav">
         <div class="logo">TravelDest</div>
         <div class="nav-menu">
-            <a href="landing.php">Trang Chủ</a>
+            <a href="landing.php"><strong>Trang Chủ</strong></a>
             <a href="destinations.php">Điểm Đến</a>
             <a href="all_reviews.php">Reviews</a>
             <a href="blogs.php">Blog</a>
             <?php if (!isset($_SESSION['user_id'])): ?>
-                <a href="login.php" class="btn">Đăng Nhập / Đăng Ký</a>
+                <a href="login.php" class="btn">Đăng Nhập</a>
             <?php else: ?>
-                <span>Xin chào, <?=htmlspecialchars($_SESSION['username'])?></span>
+                <?php $is_admin = ($_SESSION['role'] ?? 'user') === 'admin';?>
+                <span>Xin chào, <?= htmlspecialchars($_SESSION['username']) ?></span>
+                <?php if ($is_admin): ?>
+                    <a href="index.php" class="btn">Dashboard</a>
+                <?php endif; ?>
                 <a href="logout.php" class="btn btn-logout">Đăng Xuất</a>
             <?php endif; ?>
         </div>
@@ -209,7 +213,7 @@ $reviews = $conn->query("SELECT r.comment, r.rating, u.username, d.name as place
 
             <!-- Cột 3: Liên hệ -->
             <div>
-                <h3 style="color: #ff6b6b; margin-bottom: 20px; font-size: 1.3rem;">Liên Hệc Chúng Tôi</h3>
+                <h3 style="color: #ff6b6b; margin-bottom: 20px; font-size: 1.3rem;">Liên Hệ Chúng Tôi</h3>
                 <p style="line-height: 2;">
                     <i class="ri-mail-line" style="color: #ff6b6b;"></i> Email: <a href="mailto:contact@traveldest.com" style="color: #3498db; text-decoration: none;">contact@traveldest.com</a><br>
                     <i class="ri-phone-line" style="color: #ff6b6b;"></i> Hotline: <strong>1900 1234</strong><br>

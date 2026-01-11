@@ -241,7 +241,7 @@ foreach ($reviews as $r) {
 <body>
 
 <header>
-    <div class="container nav">
+    <div class="nav">
         <div class="logo">TravelDest</div>
         <div class="nav-menu">
             <a href="landing.php">Trang Chủ</a>
@@ -251,8 +251,11 @@ foreach ($reviews as $r) {
             <?php if (!isset($_SESSION['user_id'])): ?>
                 <a href="login.php" class="btn">Đăng Nhập</a>
             <?php else: ?>
-                <span>Xin chào, <?=htmlspecialchars($_SESSION['username'])?></span>
-                <a href="index.php" class="btn">Dashboard</a>
+                <?php $is_admin = ($_SESSION['role'] ?? 'user') === 'admin';?>
+                <span>Xin chào, <?= htmlspecialchars($_SESSION['username']) ?></span>
+                <?php if ($is_admin): ?>
+                    <a href="index.php" class="btn">Dashboard</a>
+                <?php endif; ?>
                 <a href="logout.php" class="btn btn-logout">Đăng Xuất</a>
             <?php endif; ?>
         </div>

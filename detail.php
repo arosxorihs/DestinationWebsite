@@ -52,22 +52,18 @@ $total_reviews = $rating_result['total_reviews'];
             align-items: center;
         }
         
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #333;
+       .logo { 
+            font-size:1.8rem; 
+            font-weight:700; 
+            color:#ff6b6b; 
         }
         
-        .nav {
-            display: flex;
-            gap: 30px;
-        }
+        .nav { display:flex; justify-content:space-between; align-items:center; padding:1rem 5%; }
+
+        .btn { background:#ff6b6b; color:white; padding:0.7rem 1.5rem; border-radius:50px; }
         
-        .nav a {
-            text-decoration: none;
-            color: #6366f1;
-            font-weight: 500;
-        }
+        .nav-menu { display:flex; gap:2rem; align-items:center; }
+        .nav-menu a { text-decoration:none; color:#333; font-weight:500; }
         
         .content {
             max-width: 1200px;
@@ -153,47 +149,35 @@ $total_reviews = $rating_result['total_reviews'];
             gap: 15px;
         }
         
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-            display: inline-block;
-        }
         
-        .btn-primary {
-            background-color: #6366f1;
-            color: white;
-        }
-        
-        .btn-secondary {
-            background-color: #e5e7eb;
-            color: #333;
-        }
-        
-        .btn:hover {
-            opacity: 0.9;
-        }
     </style>
 </head>
 <body>
-    <div class="header">
+
+<header>
+
+    <div class="nav">
         <div class="logo">TravelDest</div>
-        <div class="nav">
+        <div class="nav-menu">
             <a href="landing.php">Trang Chủ</a>
-            <a href="destinations.php">Điểm Đến</a>
+            <a href="destinations.php"><strong>Điểm Đến</strong></a>
             <a href="all_reviews.php">Reviews</a>
             <a href="blogs.php">Blog</a>
-            <?php if (isset($_SESSION['user_id'])): ?>
-                <a href="logout.php">Đăng Xuất</a>
+            <?php if (!isset($_SESSION['user_id'])): ?>
+                <a href="login.php" class="btn">Đăng Nhập</a>
             <?php else: ?>
-                <a href="login.php">Đăng Nhập</a>
+                <?php $is_admin = ($_SESSION['role'] ?? 'user') === 'admin';?>
+                <span>Xin chào, <?= htmlspecialchars($_SESSION['username']) ?></span>
+                <?php if ($is_admin): ?>
+                    <a href="index.php" class="btn">Dashboard</a>
+                <?php endif; ?>
+                <a href="logout.php" class="btn btn-logout">Đăng Xuất</a>
             <?php endif; ?>
         </div>
     </div>
 
+</header>
+<body>
     <div class="content">
         <div class="destination-header">
             <div class="destination-info">
