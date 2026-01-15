@@ -77,6 +77,45 @@ $result = $stmt->get_result();
         .pagination { text-align:center; margin:3rem 0; }
         .pagination a { padding:0.5rem 1rem; margin:0 5px; background:#fff; border:1px solid #ddd; border-radius:8px; text-decoration:none; }
         .pagination a.active { background:#ff6b6b; color:white; }
+        
+        /* Thông báo không có kết quả */
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+        }
+        .no-results i {
+            font-size: 5rem;
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+        }
+        .no-results h3 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        .no-results p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        .no-results .btn-back {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        .no-results .btn-back:hover {
+            background: #ff5252;
+            transform: translateY(-3px);
+        }
     </style>
 </head>
 <body>
@@ -121,28 +160,42 @@ $result = $stmt->get_result();
         <button type="submit">Lọc</button>
     </form>
 
-    <div class="grid">
-        <?php while ($d = $result->fetch_assoc()): ?>
-        <div class="card">
-            <img src="<?= htmlspecialchars($d['image_url'] ?: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800') ?>" alt="<?= htmlspecialchars($d['name']) ?>">
-            <div class="card-body">
-                <h3 class="card-title"><?= htmlspecialchars($d['name']) ?></h3>
-                <p class="location">📍 <?= htmlspecialchars($d['province'] ?: $d['country']) ?></p>
-                <p><?= htmlspecialchars(mb_substr($d['description'],0,100)) ?>...</p>
-                <a href="detail.php?id=<?= $d['destination_id'] ?>" class="btn">Xem Chi Tiết</a>
-            </div>
+    <?php if ($total == 0): ?>
+        <!-- Hiển thị khi không tìm thấy kết quả -->
+        <div class="no-results">
+            <i class="ri-search-line"></i>
+            <h3>Không tìm thấy điểm đến phù hợp</h3>
+            <p>
+                Rất tiếc, chúng tôi không tìm thấy điểm đến nào khớp với tiêu chí lọc của bạn.<br>
+                Hãy thử thay đổi bộ lọc hoặc xem tất cả điểm đến.
+            </p>
+            <a href="destinations.php" class="btn-back">Xem Tất Cả Điểm Đến</a>
         </div>
-        <?php endwhile; ?>
-    </div>
+    <?php else: ?>
+        <!-- Hiển thị kết quả -->
+        <div class="grid">
+            <?php while ($d = $result->fetch_assoc()): ?>
+            <div class="card">
+                <img src="<?= htmlspecialchars($d['image_url'] ?: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800') ?>" alt="<?= htmlspecialchars($d['name']) ?>">
+                <div class="card-body">
+                    <h3 class="card-title"><?= htmlspecialchars($d['name']) ?></h3>
+                    <p class="location">📍 <?= htmlspecialchars($d['province'] ?: $d['country']) ?></p>
+                    <p><?= htmlspecialchars(mb_substr($d['description'],0,100)) ?>...</p>
+                    <a href="detail.php?id=<?= $d['destination_id'] ?>" class="btn">Xem Chi Tiết</a>
+                </div>
+            </div>
+            <?php endwhile; ?>
+        </div>
 
-    <?php if ($pages > 1): ?>
-    <div class="pagination">
-        <?php for($i=1; $i<=$pages; $i++): ?>
-            <a href="?page=<?= $i ?>&category=<?=urlencode($category)?>&province=<?=urlencode($province)?>&search=<?=urlencode($search)?>" class="<?= $i==$page?'active':'' ?>">
-                <?= $i ?>
-            </a>
-        <?php endfor; ?>
-    </div>
+        <?php if ($pages > 1): ?>
+        <div class="pagination">
+            <?php for($i=1; $i<=$pages; $i++): ?>
+                <a href="?page=<?= $i ?>&category=<?=urlencode($category)?>&province=<?=urlencode($province)?>&search=<?=urlencode($search)?>" class="<?= $i==$page?'active':'' ?>">
+                    <?= $i ?>
+                </a>
+            <?php endfor; ?>
+        </div>
+        <?php endif; ?>
     <?php endif; ?>
 </div>
 
