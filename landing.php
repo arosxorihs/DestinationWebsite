@@ -3,30 +3,6 @@ session_start();
 include 'config.php';
 include 'cookie.php'; // Auto login nếu có remember token
 
-// Xử lý contact form
-$contact_message = "";
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contact_submit'])) {
-    $name = trim($_POST['name']);
-    $email = trim($_POST['email']);
-    $message_text = trim($_POST['message']);
-
-    if ($name && $email && $message_text) {
-        // Gửi email (thay your_email@example.com bằng email thật)
-        $to = "your_email@example.com";
-        $subject = "Liên hệ từ TravelDest: $name";
-        $body = "Từ: $name <$email>\n\n$message_text";
-        $headers = "From: $email\r\nReply-To: $email\r\n";
-
-        if (mail($to, $subject, $body, $headers)) {
-            $contact_message = "Gửi liên hệ thành công!";
-        } else {
-            $contact_message = "Lỗi gửi email. Vui lòng thử lại.";
-        }
-    } else {
-        $contact_message = "Vui lòng điền đầy đủ thông tin.";
-    }
-}
-
 // Lấy 8 điểm du lịch nổi bật
 $stmt = $conn->query("SELECT destination_id, name, country, province, image_url, description 
                       FROM destinations 
