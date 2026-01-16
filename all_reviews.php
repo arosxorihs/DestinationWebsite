@@ -3,7 +3,7 @@ session_start();
 include 'config.php';
 include 'cookie.php';
 
-// Lấy tất cả review (chỉ review cha - không lấy reply)
+
 $reviews = $conn->query("
     SELECT r.*, u.username, d.name as dest_name, d.image_url, d.province, d.destination_id
     FROM reviews r 
@@ -13,7 +13,6 @@ $reviews = $conn->query("
     ORDER BY d.name ASC, r.review_id DESC
 ")->fetch_all(MYSQLI_ASSOC);
 
-// Group reviews theo destination
 $grouped_reviews = [];
 foreach ($reviews as $r) {
     $grouped_reviews[$r['dest_name']][] = $r;
@@ -46,7 +45,7 @@ foreach ($reviews as $r) {
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-        /* Header */
+        
         header {
             background: rgba(255,255,255,0.98);
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -90,7 +89,6 @@ foreach ($reviews as $r) {
         .btn-logout { background: #dc3545; }
         .btn-logout:hover { background: #c82333; }
 
-        /* Main content */
         main { margin-top: 100px; padding: 2rem 0; }
         h1 {
             text-align: center;
@@ -109,7 +107,6 @@ foreach ($reviews as $r) {
             border-radius: 3px;
         }
 
-        /* Destination Group */
         .destination-group {
             background: white;
             border-radius: 16px;
@@ -209,7 +206,6 @@ foreach ($reviews as $r) {
             margin-bottom: 1rem;
         }
         
-        /* Reply indicator */
         .reply-indicator {
             display: inline-block;
             background: #e3f2fd;
@@ -228,7 +224,6 @@ foreach ($reviews as $r) {
             font-size: 1.3rem;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .nav-menu { flex-direction: column; gap: 1rem; }
             .dest-header { flex-direction: column; text-align: center; }
@@ -271,9 +266,8 @@ foreach ($reviews as $r) {
         </div>
     <?php else: ?>
         <?php foreach ($grouped_reviews as $dest_name => $revs): 
-            $first_review = $revs[0]; // Lấy review đầu để lấy ảnh + tỉnh + destination_id
+            $first_review = $revs[0]; 
             
-            // Đếm số reply cho mỗi review
             $review_ids = array_column($revs, 'review_id');
             $reply_counts = [];
             if (!empty($review_ids)) {

@@ -1,9 +1,9 @@
 <?php
 session_start();
 include 'config.php';
-include 'cookie.php'; // Auto login bằng Remember me
+include 'cookie.php'; 
 
-// === Nếu chưa đăng nhập → quay về landing page ===
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: landing.php");
     exit;
@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $is_admin = ($_SESSION['role'] ?? 'user') === 'admin';
 
-// === Đăng xuất ===
+
 if (isset($_GET['logout'])) {
     header("Location: logout.php");
     exit;
@@ -19,7 +19,7 @@ if (isset($_GET['logout'])) {
 
 $message = "";
 
-// ==================== XỬ LÝ FILTER (CHỈ ADMIN) ====================
+
 $category = isset($_GET['category']) ? trim($_GET['category']) : '';
 $province = isset($_GET['province']) ? trim($_GET['province']) : '';
 
@@ -97,7 +97,7 @@ $result = $stmt->get_result();
 
     <h1>Quản Lý Điểm Du Lịch</h1>
 
-    <!-- Bộ lọc chỉ dành cho Admin -->
+   
     <?php if ($is_admin): ?>
     <div class="filter-box">
         <form method="GET">
@@ -118,7 +118,7 @@ $result = $stmt->get_result();
     </div>
     <?php endif; ?>
 
-    <!-- Bảng danh sách địa điểm -->
+   
     <table>
         <thead>
             <tr>
