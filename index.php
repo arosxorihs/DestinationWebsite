@@ -79,7 +79,7 @@ $result = $stmt->get_result();
 
 <div class="container">
 
-    <!-- Header + Menu -->
+
     <div class="header">
         <h2>Xin chào, <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>!</h2>
         <div>

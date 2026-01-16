@@ -4,7 +4,7 @@ require_once 'config.php';
 
 $destination_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-// Lấy thông tin destination
+
 $stmt = $conn->prepare("SELECT * FROM destinations WHERE destination_id = ?");
 $stmt->bind_param("i", $destination_id);
 $stmt->execute();
@@ -16,7 +16,7 @@ if (!$destination) {
     exit();
 }
 
-// Tính rating trung bình
+
 $stmt = $conn->prepare("SELECT AVG(rating) as avg_rating, COUNT(*) as total_reviews FROM reviews WHERE destination_id = ?");
 $stmt->bind_param("i", $destination_id);
 $stmt->execute();

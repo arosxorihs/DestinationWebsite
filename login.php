@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
         $stmt->execute();
         if ($stmt->get_result()->num_rows > 0) {
             $message = "Tên đăng nhập đã tồn tại!";
-        } else { // Mã hóa mật khẩu khi đăng ký
+        } else { 
             $hash = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
             $stmt->bind_param("ss", $username, $hash);
@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             $message = "Đăng ký thành công! Hãy đăng nhập.";
         }
     }
-    // Kiểm tra mật khẩu khi đăng nhập
+    
     if ($_POST['action'] === "login") {
         $stmt = $conn->prepare("SELECT user_id, username, password, role FROM users WHERE username=?");
         $stmt->bind_param("s", $username);
@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role'] = $user['role'] ?? 'user';
 
-                // Remember me
+                
                 if (isset($_POST['remember'])) {
                     $token = bin2hex(random_bytes(32));
                     $expires = date('Y-m-d H:i:s', strtotime('+30 days'));
@@ -52,11 +52,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
                     setcookie("remember_token", $token, time() + 86400*30, "/", "", false, true);
                 }
 
-                // Redirect dựa trên role
                 if ($user['role'] === 'admin') {
-                    header("Location: index.php"); // Admin → quản lý
+                    header("Location: index.php"); 
                 } else {
-                    header("Location: landing.php"); // User → landing
+                    header("Location: landing.php"); 
                 }
                 exit;
             } else {
@@ -81,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             max-width: 500px; 
             margin: 50px auto; 
             padding: 20px;
-            background: #ffffff; /* Nền trắng */
+            background: #ffffff; 
             min-height: 100vh;
         }
         .container {
@@ -116,7 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             width: 100%; 
             padding: 12px; 
             margin: 10px 0;
-            background: #ff6b6b; /* Đổi từ #28a745 sang màu đỏ */
+            background: #ff6b6b; 
             color: white; 
             border: none; 
             cursor: pointer;
@@ -126,7 +125,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             transition: background 0.3s;
         }
         button:hover {
-            background: #ff5252; /* Màu đỏ đậm hơn khi hover */
+            background: #ff5252; 
         }
         .message {
             padding: 12px;
