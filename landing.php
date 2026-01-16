@@ -1,16 +1,13 @@
 <?php
 session_start();
 include 'config.php';
-include 'cookie.php'; // Auto login nếu có remember token
-
-// Lấy 8 điểm du lịch nổi bật
+include 'cookie.php'; 
 $stmt = $conn->query("SELECT destination_id, name, country, province, image_url, description 
                       FROM destinations 
                       ORDER BY destination_id DESC 
                       LIMIT 8");
 $destinations = $stmt->fetch_all(MYSQLI_ASSOC);
 
-// Lấy 5 review 5 sao làm testimonial
 $reviews = $conn->query("SELECT r.comment, r.rating, u.username, d.name as place 
                          FROM reviews r 
                          JOIN users u ON r.user_id = u.user_id 
@@ -168,7 +165,6 @@ $reviews = $conn->query("SELECT r.comment, r.rating, u.username, d.name as place
     <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; text-align: left;">
 
-            <!-- Cột 1: Logo + Giới thiệu -->
             <div style="text-align: center;">
                 <h2 style="color: #ff6b6b; font-size: 2.2rem; margin-bottom: 15px;">TravelDest</h2>
                 <p style="font-size: 1.1rem; line-height: 1.7; opacity: 0.9;">
@@ -177,7 +173,6 @@ $reviews = $conn->query("SELECT r.comment, r.rating, u.username, d.name as place
                 </p>
             </div>
 
-            <!-- Cột 2: Liên kết nhanh -->
             <div>
                 <h3 style="color: #ff6b6b; margin-bottom: 20px; font-size: 1.3rem;">Khám Phá</h3>
                 <ul style="list-style: none; padding: 0; line-height: 2.2;">
@@ -187,7 +182,6 @@ $reviews = $conn->query("SELECT r.comment, r.rating, u.username, d.name as place
                 </ul>
             </div>
 
-            <!-- Cột 3: Liên hệ -->
             <div>
                 <h3 style="color: #ff6b6b; margin-bottom: 20px; font-size: 1.3rem;">Liên Hệ Chúng Tôi</h3>
                 <p style="line-height: 2;">
