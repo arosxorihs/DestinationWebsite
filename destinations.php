@@ -3,7 +3,6 @@ session_start();
 include 'config.php';
 include 'cookie.php';
 
-// LẤY THAM SỐ FILTER
 $category = trim($_GET['category'] ?? '');
 $province = trim($_GET['province'] ?? '');
 $search   = trim($_GET['search'] ?? '');
@@ -11,9 +10,7 @@ $search   = trim($_GET['search'] ?? '');
 $page  = max(1, (int)($_GET['page'] ?? 1));
 $limit = 12;
 $offset = ($page - 1) * $limit;
-
-// ĐẾM TỔNG
-$count_query = "SELECT COUNT(*) FROM destinations WHERE 1=1";
+$count_query = "SELECT COUNT(*) FROM destinations WHERE 1=1"; 
 $count_params = [];
 $count_types  = '';
 
@@ -27,7 +24,6 @@ $stmt_count->execute();
 $total = $stmt_count->get_result()->fetch_row()[0];
 $pages = ceil($total / $limit);
 
-// LẤY DATA 
 $query = "SELECT * FROM destinations WHERE 1=1";
 $params = [];
 $types  = '';
@@ -78,7 +74,6 @@ $result = $stmt->get_result();
         .pagination a { padding:0.5rem 1rem; margin:0 5px; background:#fff; border:1px solid #ddd; border-radius:8px; text-decoration:none; }
         .pagination a.active { background:#ff6b6b; color:white; }
         
-        /* Thông báo không có kết quả */
         .no-results {
             text-align: center;
             padding: 4rem 2rem;
@@ -161,7 +156,6 @@ $result = $stmt->get_result();
     </form>
 
     <?php if ($total == 0): ?>
-        <!-- Hiển thị khi không tìm thấy kết quả -->
         <div class="no-results">
             <i class="ri-search-line"></i>
             <h3>Không tìm thấy điểm đến phù hợp</h3>
@@ -172,7 +166,7 @@ $result = $stmt->get_result();
             <a href="destinations.php" class="btn-back">Xem Tất Cả Điểm Đến</a>
         </div>
     <?php else: ?>
-        <!-- Hiển thị kết quả -->
+        
         <div class="grid">
             <?php while ($d = $result->fetch_assoc()): ?>
             <div class="card">
