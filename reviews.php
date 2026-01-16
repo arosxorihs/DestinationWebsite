@@ -5,7 +5,6 @@ include 'cookie.php';
 
 $destination_id = isset($_GET['destination_id']) && is_numeric($_GET['destination_id']) ? (int)$_GET['destination_id'] : null;
 
-// XỬ LÝ ADMIN REPLY
 if (isset($_POST['submit_reply']) && isset($_SESSION['user_id']) && $_SESSION['role'] === 'admin') {
     $reply_text = trim($_POST['reply_text']);
     $parent_id = (int)$_POST['parent_id'];
@@ -23,21 +22,17 @@ if (isset($_POST['submit_reply']) && isset($_SESSION['user_id']) && $_SESSION['r
     }
 }
 
-// XỬ LÝ XÓA REVIEW (ADMIN)
 if (isset($_GET['delete_review']) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     $review_id = (int)$_GET['delete_review'];
     
-    // Xóa tất cả reply trước
     $conn->query("DELETE FROM reviews WHERE parent_id = $review_id");
     
-    // Xóa review chính
     $conn->query("DELETE FROM reviews WHERE review_id = $review_id");
     
     header("Location: reviews.php?destination_id=" . $destination_id);
     exit;
 }
 
-// XỬ LÝ VIẾT REVIEW MỚI
 if (isset($_POST['submit_review']) && isset($_SESSION['user_id'])) {
     $rating = (int)$_POST['rating'];
     $comment = trim($_POST['comment']);
@@ -52,7 +47,6 @@ if (isset($_POST['submit_review']) && isset($_SESSION['user_id'])) {
     }
 }
 
-// KIỂM TRA DESTINATION HỢP LỆ
 if (!$destination_id) {
     header('Location: landing.php');
     exit;
@@ -68,7 +62,6 @@ if (!$destination) {
     exit;
 }
 
-// LẤY REVIEWS (chỉ review cha - không lấy reply)
 $review_stmt = $conn->prepare("
     SELECT r.*, u.username 
     FROM reviews r 
@@ -79,8 +72,7 @@ $review_stmt = $conn->prepare("
 $review_stmt->bind_param("i", $destination_id);
 $review_stmt->execute();
 $reviews = $review_stmt->get_result();
-
-//  THỐNG KÊ ĐÁNH GIÁ 
+ 
 $stats_stmt = $conn->prepare("
     SELECT 
         COUNT(*) as total_reviews,
@@ -99,7 +91,6 @@ $stats = $stats_stmt->get_result()->fetch_assoc();
 $avg_rating = $stats['avg_rating'] ? round($stats['avg_rating'], 1) : 0;
 $total_reviews = $stats['total_reviews'] ?? 0;
 
-// Tính phần trăm cho bar chart
 $percentages = [];
 for ($i=5; $i>=1; $i--) {
     $keys = [5 => 'five_star', 4 => 'four_star', 3 => 'three_star', 2 => 'two_star', 1 => 'one_star'];
@@ -127,7 +118,6 @@ for ($i=5; $i>=1; $i--) {
         body { font-family: 'Poppins', sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-        /* Header */
         header { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; }
         .logo { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
@@ -139,12 +129,10 @@ for ($i=5; $i>=1; $i--) {
         .btn-logout { background: #dc3545; }
         .btn-logout:hover { background: #c82333; }
 
-        /* Hero Section */
         .hero { background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('<?= htmlspecialchars($destination['image_url'] ?: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070') ?>'); background-size: cover; background-position: center; color: white; padding: 6rem 0; text-align: center; border-radius: 16px; margin-bottom: 3rem; }
         .hero h1 { font-size: 3rem; margin-bottom: 1rem; }
         .hero p { font-size: 1.5rem; opacity: 0.9; }
 
-        /* Stats Section */
         .stats { display: flex; justify-content: space-between; gap: 2rem; margin-bottom: 3rem; }
         .stats-overview { flex: 1; text-align: center; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .stats-overview .avg-rating { font-size: 3.5rem; color: #ffc107; font-weight: bold; }
@@ -156,7 +144,6 @@ for ($i=5; $i>=1; $i--) {
         .bar-fill { background: #ffc107; height: 100%; border-radius: 5px; transition: width 1s ease-in-out; }
         .bar-percent { width: 50px; text-align: right; font-size: 0.9rem; color: var(--gray); }
 
-        /* Reviews List */
         .reviews-list { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 3rem; }
         .review-card { border-bottom: 1px solid var(--border); padding: 1.5rem 0; }
         .review-card:last-child { border-bottom: none; }
@@ -165,12 +152,10 @@ for ($i=5; $i>=1; $i--) {
         .rating { color: #ffc107; font-weight: bold; }
         .review-comment { color: #555; line-height: 1.7; margin-bottom: 1rem; }
         
-        /* Admin Actions */
         .admin-actions { margin-top: 0.5rem; }
         .admin-actions a { color: #dc3545; font-size: 0.9rem; text-decoration: none; margin-right: 15px; }
         .admin-actions a:hover { text-decoration: underline; }
         
-        /* Reply Section */
         .reply-section { margin-left: 40px; margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 3px solid #007bff; border-radius: 8px; }
         .reply-section strong { color: #007bff; }
         .reply-form { margin-top: 15px; }
@@ -178,19 +163,16 @@ for ($i=5; $i>=1; $i--) {
         .reply-form button { margin-top: 10px; background: #007bff; color: white; padding: 8px 20px; border: none; border-radius: 6px; cursor: pointer; }
         .reply-form button:hover { background: #0056b3; }
 
-        /* Form Section */
         .add-review { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .add-review select, .add-review textarea { width: 100%; padding: 1rem; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; font-size: 1rem; }
         .add-review textarea { min-height: 150px; resize: vertical; }
         .add-review button { background: var(--primary); color: white; padding: 1rem 2rem; border: none; border-radius: 50px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
         .add-review button:hover { background: #ff5252; }
 
-        /* Back Links */
         .back-links { text-align: center; margin-top: 3rem; }
         .back-links a { color: var(--primary); text-decoration: none; font-weight: 500; margin: 0 1rem; }
         .back-links a:hover { text-decoration: underline; }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .stats { flex-direction: column; }
             .hero h1 { font-size: 2.2rem; }
@@ -271,7 +253,6 @@ for ($i=5; $i>=1; $i--) {
                     <?php endif; ?>
 
                     <?php
-                    // Lấy tất cả reply của review này
                     $replyStmt = $conn->prepare("
                         SELECT r.*, u.username 
                         FROM reviews r 
