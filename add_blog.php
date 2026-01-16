@@ -3,7 +3,7 @@ session_start();
 include 'config.php';
 include 'cookie.php';
 
-// Phải đăng nhập mới được viết blog
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($title) || empty($content)) {
         $message = "Tiêu đề và nội dung không được để trống!";
     } else {
-        // INSERT vào database (không có slug, image_url, views, status)
+       
         $stmt = $conn->prepare("
             INSERT INTO blogs 
                 (title, content, user_id, destination_id) 
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Lấy danh sách điểm đến
+
 $dests = $conn->query("SELECT destination_id, name FROM destinations ORDER BY name");
 ?>
 

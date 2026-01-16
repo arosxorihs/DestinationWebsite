@@ -1,15 +1,15 @@
 <?php
 session_start();
 include 'config.php';
-include 'cookie.php'; // Auto login bằng Remember me
+include 'cookie.php'; 
 
-// === Nếu chưa đăng nhập → quay về landing page ===
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: landing.php");
     exit;
 }
 
-// === Đăng xuất ===
+
 if (isset($_GET['logout'])) {
     header("Location: logout.php");
     exit;
@@ -18,7 +18,7 @@ if (isset($_GET['logout'])) {
 $is_admin = ($_SESSION['role'] ?? 'user') === 'admin';
 $user_id = $_SESSION['user_id'];
 
-// Xử lý viết blog mới
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title = trim($_POST['title']);
     $content = trim($_POST['content']);
@@ -27,11 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt = $conn->prepare("INSERT INTO blogs (title, content, user_id, destination_id) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("ssii", $title, $content, $user_id, $dest_id);
     $stmt->execute();
-    header("Location: blogs.php"); // Redirect về xem blog sau khi đăng
+    header("Location: blogs.php"); 
     exit;
 }
 
-// Lấy danh sách destinations để chọn gắn tag
+
 $dests = $conn->query("SELECT destination_id, name FROM destinations ORDER BY name");
 ?>
 

@@ -2,7 +2,7 @@
 session_start();
 include 'config.php';
 
-// Only admin can access
+
 if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     header('Location: index.php');
     exit;
@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
 
 $destination_id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : null;
 
-// Khởi tạo dữ liệu mặc định
+
 $destination = [
     'name' => '',
     'country' => '',
@@ -20,7 +20,7 @@ $destination = [
     'province' => ''
 ];
 
-// Nếu đang sửa → lấy dữ liệu cũ
+
 if ($destination_id) {
     $stmt = $conn->prepare("SELECT * FROM destinations WHERE destination_id = ?");
     $stmt->bind_param("i", $destination_id);
@@ -34,22 +34,22 @@ if ($destination_id) {
     }
 }
 
-// Xử lý lưu (thêm hoặc sửa)
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $name        = trim($_POST["name"] ?? '');
     $country     = trim($_POST["country"] ?? '');
     $description = trim($_POST["description"] ?? '');
-    $image_url   = trim($_POST["image_url"] ?? '');  // Có thể để trống
+    $image_url   = trim($_POST["image_url"] ?? '');  
     $category    = trim($_POST["category"] ?? '');
     $province    = trim($_POST["province"] ?? '');
 
     if ($destination_id) {
-        // CẬP NHẬT
+       
         $stmt = $conn->prepare("UPDATE destinations SET name=?, country=?, description=?, image_url=?, category=?, province=? WHERE destination_id=?");
         $stmt->bind_param("ssssssi", $name, $country, $description, $image_url, $category, $province, $destination_id);
     } else {
-        // THÊM MỚI
+        
         $stmt = $conn->prepare("INSERT INTO destinations (name, country, description, image_url, category, province) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssss", $name, $country, $description, $image_url, $category, $province);
     }
